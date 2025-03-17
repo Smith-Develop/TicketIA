@@ -1,21 +1,17 @@
-import express from 'express';
-import { json } from 'body-parser';
-import cors from 'cors';
-import helmet from 'helmet';
-import userRoutes from './routes/userRoutes';
+import app from './app';
+import sequelize from './config/db';
 
-const app = express();
+
 const PORT = process.env.PORT || 3000;
 
-// Middlewares
-app.use(json());
-app.use(cors());
-app.use(helmet());
-
-// Routes
-app.use('/api/users', userRoutes);
-
-// Start server
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});
+//sincronizar base de datos y levantar servidor
+sequelize.sync()
+  .then(() => {
+    console.log('✅ Base de datos sincronizada correctamente.');
+    app.listen(PORT, () => {
+      console.log(`🚀 Servidor escuchando en el puerto ${PORT}`);
+    });
+  })
+  .catch((error) => {
+    console.error('❌ Error al sincronizar la base de datos:', error);
+  });
